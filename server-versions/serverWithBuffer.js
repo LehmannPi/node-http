@@ -26,5 +26,5 @@ server.on('request', (request, response) => {
 });
 
 server.listen(8080);
-// ! run with:
-// ! curl --header Content-Type:application/json --request POST --data @MOCK_DATA.json http://localhost:8080
+// Buffer example. Run server.js then run:
+// curl --header Content-Type:application/json --request POST --data @MOCK_DATA.json http://localhost:8080
