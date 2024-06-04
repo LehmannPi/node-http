@@ -1,5 +1,5 @@
 const http = require('http');
-const services = require('./services');
+const services = require('../services');
 const { parse } = require('url');
 const { Buffer } = require('node:buffer');
 
