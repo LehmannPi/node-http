@@ -21,6 +21,6 @@ server.on('request', (request, response) => {
 
 server.listen(8080);
 
-// * Possible curl requests
+// Example using body library. Run server.js then run:
 // curl --header Content-Type:application/json --request POST --data @MOCK_DATA.json http://localhost:8080
 // curl --header Content-Type:application/json --request POST --data '{"userName": "armen"}' http://localhost:8080
