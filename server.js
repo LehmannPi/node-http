@@ -1,13 +1,27 @@
-var http = require('http');
+const http = require('http');
+const services = require('./services');
+const { parse } = require('url');
+const { Buffer } = require('node:buffer');
 
-const server = http
-  .createServer(function (request, response) {
-    // response.writeHead(200, {'Content-Type': 'text/plain'});
-    // response.end('Hello World');
-  })
-  .on('request', (request, response) => {
-    console.log('This is an incoming request');
-  })
-  .listen(8081);
+const server = http.createServer();
+server.on('request', (request, response) => {
+  const parsedUrl = parse(request.url, true);
+  if (request.method === 'GET' && parsedUrl.pathname === '/metadata') {
+    const { id } = parsedUrl.query;
+    const metadata = services.fetchImageMetadata(id);
+    console.log(request.headers);
+  }
+  const body = [];
 
-console.log('Server running at http://127.0.0.1:8081/');
+  request
+    .on('data', (chunk) => {
+      body.push(chunk);
+    })
+    .on('end', () => {
+      const parsedJSON = JSON.parse(Buffer.concat(body));
+      const userName = parsedJSON[0]['userName'];
+      console.log(userName);
+    });
+});
+
+server.listen(8080);
