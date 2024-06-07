@@ -1,26 +1,35 @@
-const https = require('https');
+const http = require('http');
 const services = require('../services');
-const { parse } = require('url');
+const url = require('url');
 const jsonBody = require('body/json');
+const fs = require('fs');
 
-const server = https.createServer();
+const server = http.createServer();
+
 server.on('request', (request, response) => {
-  const parsedUrl = parse(request.url, true);
+  const parsedUrl = url.parse(request.url, true);
   if (request.method === 'GET' && parsedUrl.pathname === '/metadata') {
     const { id } = parsedUrl.query;
     const metadata = services.fetchImageMetadata(id);
-    console.log(request.headers);
+    response.setHeader('Content-Type', 'application/json');
+    response.statusCode = 200;
+    const serializedJSON = JSON.stringify(metadata);
+    response.write(serializedJSON);
+    response.end();
+  } else if (request.method === 'POST' && parsedUrl.pathname === '/users') {
+    jsonBody(request, response, (err, body) => {
+      if (err) {
+        console.log(err);
+      } else {
+        services.createUser(body['userName']);
+      }
+    });
+  } else {
+    response.writeHead(404, {
+      'X-Powered-By': 'Node',
+    });
+    response.end();
   }
-  jsonBody(request, response, (err, body) => {
-    if (err) {
-      console.log(err);
-    }
-    services.createUser(body['userName']);
-  });
 });
 
 server.listen(8080);
-
-// Example using body library. Run server.js then run:
-// curl --header Content-Type:application/json --request POST --data @MOCK_DATA.json http://localhost:8080
-// curl --header Content-Type:application/json --request POST --data '{"userName": "armen"}' http://localhost:8080
